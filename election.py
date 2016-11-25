@@ -1,17 +1,9 @@
 import json
-import heapq
 from tabulate import tabulate
 
 with open('results.json') as data_file:    
     data = json.load(data_file)
 
-mostHillary = []
-mostTrump = []
-mostJohnson = []
-mostStein = []
-mostThirdParty = []
-leastTrump = []
-leastHillary = []
 
 resultsTuples = []
 
@@ -35,16 +27,18 @@ for i in range(1,51):
 		johnsonPercent = johnsonVotes / totalVotes
 		steinPercent = steinVotes / totalVotes
 		resultsTuple = (stateName, countyName, hillaryPercent, trumpPercent, johnsonPercent, steinPercent)
-		#Change this to set a minimum number of votes in the county for ranking
+		#Change this to set a minimum/maximum number of votes in the county for ranking
 		minVotes = 25000
-		if totalVotes > minVotes:
+		maxVotes = 50000
+		if (totalVotes > minVotes) and (totalVotes < maxVotes):
 			resultsTuples.append(resultsTuple)
 
 hillarySorted = sorted(resultsTuples, key=lambda x: x[2])
 trumpSorted = sorted(resultsTuples, key=lambda x: x[3])
 johnsonSorted = sorted(resultsTuples, key=lambda x: x[4])
 steinSorted = sorted(resultsTuples, key=lambda x: x[5])
-print '\n\nOnly considering counties with at least ' + str(minVotes) + ' votes'
+thirdPartySorted = sorted(resultsTuples, key=lambda x: (x[4] + x[5]))
+print '\n\nOnly considering counties with at least ' + str(minVotes) + ' votes and under ' + str(maxVotes) + ' votes'
 print '\n\n10 Most Democratic'
 printTuplesList = []
 for i in range(0, 10):
@@ -93,6 +87,13 @@ for i in range(0, 10):
 	printTuplesList.append(printTup)
 print tabulate(printTuplesList)
 
+print '\n\n10 Most Third Party'
+printTuplesList = []
+for i in range(0, 10):
+	tup = thirdPartySorted[len(thirdPartySorted) - i - 1]
+	printTup = [tup[1], tup[0], (tup[5] + tup[4])]
+	printTuplesList.append(printTup)
+print tabulate(printTuplesList)
 
 for i in range(len(trumpSorted)):
 	tup = trumpSorted[i]
